@@ -1,44 +1,45 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import EventListView from '@/views/EventListView.vue'
+import NewsListView from '@/views/NewsListView.vue'
 import AboutView from '@/views/AboutView.vue'
-import EventDetailView from '@/views/event/DetailView.vue'
-import EventRegisterView from '@/views/event/RegisterView.vue'
-import EventEditView from '@/views/event/EditView.vue'
-import EventLayoutView from '@/views/event/LayoutView.vue'
-import StudentListView from '@/views/StudentListView.vue'
+import NewsDetailView from '@/views/news/DetailView.vue'
+import NewsRegisterView from '@/views/news/RegisterView.vue'
+import NewsEditView from '@/views/news/EditView.vue'
+import NewsLayoutView from '@/views/news/LayoutView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import NetworkErrorView from '@/views/NetworkErrorView.vue'
 import nProgress from 'nprogress'
-import EventService from '@/services/EventService'
-import { useEventStore } from '@/stores/event' //Needed but not included in lab instruction
+import NewsService from '@/services/NewsService'
+import { useNewsStore } from '@/stores/News'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'event-list-view',
-      component: EventListView,
-      props: (route) => ({ page: parseInt(route.query.page?.toString() || '1') }),
+      name: 'news-list-view',
+      component: NewsListView,
+      props: (route) => ({
+        page: parseInt(route.query.page?.toString() || '1'),
+        size: parseInt(route.query.size?.toString() || '2'),
+      }),
     },
     {
-      path: '/event/:id',
-      name: 'event-layout-view',
-      component: EventLayoutView,
+      path: '/news/:id',
+      name: 'news-layout-view',
+      component: NewsLayoutView,
       props: true,
       beforeEnter: (to) => {
         const id = parseInt(to.params.id as string)
-        const eventStore = useEventStore()
-        return EventService.getEvent(id)
+        const newsStore = useNewsStore()
+        return NewsService.getNewsItem(id)
           .then((response) => {
-            //need to setup the data for the event
-            eventStore.setEvent(response.data)
+            newsStore.setNews(response.data)
           })
           .catch((error) => {
             if (error.response && error.response.status === 404) {
               return {
                 name: '404-resource-view',
-                params: { resource: 'event' },
+                params: { resource: 'news' },
               }
             } else {
               return { name: 'network-error-view' }
@@ -48,20 +49,20 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'event-detail-view',
-          component: EventDetailView,
+          name: 'news-detail-view',
+          component: NewsDetailView,
           props: true,
         },
         {
           path: 'register',
-          name: 'event-register-view',
-          component: EventRegisterView,
+          name: 'news-register-view',
+          component: NewsRegisterView,
           props: true,
         },
         {
           path: 'edit',
-          name: 'event-edit-view',
-          component: EventEditView,
+          name: 'news-edit-view',
+          component: NewsEditView,
           props: true,
         },
       ],
@@ -87,20 +88,6 @@ const router = createRouter({
       name: 'not-found',
       component: NotFoundView,
     },
-    {
-      path: '/students',
-      name: 'students',
-      component: StudentListView,
-    },
-    {
-      path: '/',
-      name: 'event-list-view',
-      component: EventListView,
-      props: (route) => ({
-        page: parseInt(route.query.page as string) || 1,
-        size: parseInt(route.query.size as string) || 2,
-      }),
-    },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
@@ -110,6 +97,7 @@ const router = createRouter({
     }
   },
 })
+
 router.beforeEach(() => {
   nProgress.start()
 })
@@ -117,4 +105,5 @@ router.beforeEach(() => {
 router.afterEach(() => {
   nProgress.done()
 })
+
 export default router

@@ -1,19 +1,17 @@
-export interface Event {
+export interface News {
   id: number
-  category: string
-  title: string
-  description: string
-  location: string
-  date: string
-  time: string
-  petsAllowed: boolean
-  organizer: string
+  topic: string
+  short_detail: string
+  status: 'True' | 'False' | 'Pending'
+  reporter: string
+  date: string // format: YYYY-MM-DD
+  time: string // format: HH:mm:ss
 }
 
 export interface MessageState {
   message: string
 }
 
-export interface EventState {
-  event: Event | null
+export interface NewsState {
+  news: News | null
 }
