@@ -6,6 +6,10 @@ h1 {
   @apply text-4xl mb-8;
 }
 
+h2 {
+  @apply text-[18px] font-medium mb-8 text-left;
+}
+
 .btn-primary {
   @apply bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 mt-2 rounded shadow;
 }
